@@ -1,5 +1,6 @@
 <template>
     <div>
+        <button @click="erpStore.logout()">logout</button>
         <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
             <div class="grid grid-cols-3 gap-4 mb-4">
                 <div class="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800">
@@ -127,3 +128,11 @@
         </div>
     </div>
 </template>
+<script setup>
+import { useErpStore } from '~/stores/erpStore'
+const erpStore = useErpStore()
+
+definePageMeta({
+    middleware: 'is-logged-out'
+})
+</script>

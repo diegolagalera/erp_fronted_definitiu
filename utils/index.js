@@ -3,6 +3,9 @@ export default {
     test() {
         return 'holaa soy un test'
 
+    },
+    copy(item) {
+        return JSON.parse(JSON.stringify(item))
     }
 }
 

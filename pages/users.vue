@@ -2,7 +2,7 @@
     <div>
         {{ erp.msg }}
         {{ erp.upper }}
-        <button class="shadow-2xl" @click="erp.setMsg('jejejeje')" >set new message button</button>
+        <button class="shadow-2xl" @click="erp.setMsg('jejejeje')">set new message button</button>
 
         <CustomTable></CustomTable>
         <!-- {{ user }} -->
@@ -16,6 +16,9 @@ const runtimeConfig = useRuntimeConfig()
 console.log(utils.test())
 import { useErpStore } from '~/stores/erpStore'
 const erp = useErpStore()
+definePageMeta({
+    middleware: 'is-logged-out'
+})
 // const double = computed(() => count.value * 2)
 // const users = ref([])
 // const loadusers = ref(null)

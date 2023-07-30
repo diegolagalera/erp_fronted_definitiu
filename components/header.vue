@@ -17,16 +17,17 @@
                     placeholder="Search...">
             </div>
         </div>
-        <div class="bg-slate-500 flex flex-col" id="user-menu">
+        <div class=" flex flex-col" id="user-menu">
             <button type="button" @click="showProfile = !showProfile"
-                class="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 self-end"
+                class="h-12 w-12 px-1 overflow-hidden border-black border-solid border-[1px] flex mr-3 text-sm bg-emerald-200 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 self-end"
                 id="user-menu-button" aria-expanded="false">
                 <span class="sr-only">Open user menu</span>
-                <img class="w-8 h-8 rounded-full" src="/docs/images/people/profile-picture-3.jpg" alt="user photo">
+                <!-- <img class="w-8 h-8 rounded-full" src="/docs/images/people/profile-picture-3.jpg" alt="user photo"> -->
+                <Icon name="twemoji:person-pouting-light-skin-tone" size="60"></Icon>
             </button>
             <!-- Dropdown menu -->
             <div v-show="showProfile"
-                class="absolute z-50 my-10 -ml-32 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600">
+                class="absolute z-50 mt-14 -ml-32 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600">
                 <div class="px-4 py-3">
                     <span class="block text-sm text-gray-900 dark:text-white">Bonnie Green</span>
                     <span class="block text-sm  text-gray-500 truncate dark:text-gray-400">name@flowbite.com</span>
@@ -37,17 +38,13 @@
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Dashboard</a>
                     </li>
                     <li>
-                        <a href="#"
-                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Settings</a>
+                        <button href="#"
+                            class="block w-full text-start px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">button</button>
                     </li>
                     <li>
-                        <a href="#"
-                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Earnings</a>
-                    </li>
-                    <li>
-                        <a href="#"
-                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign
-                            out</a>
+                        <button href="#" @click="logout()"
+                            class="block w-full text-start px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">{{
+                                $t('LOGGIN.SINGOUT') }}</button>
                     </li>
                 </ul>
             </div>
@@ -56,15 +53,30 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
-
+const erpStore = useErpStore()
+const router = useRouter()
 var showProfile = ref(false)
-onMounted(() => {
-    window.document.addEventListener('click', function (event) {
-        const modal = document.getElementById('user-menu');
-        if (!modal.contains(event.target) && showProfile) {
-            showProfile.value = false
-        }
-    });
-})
+function logout() {
+    try {
+        erpStore.logout()
+        router.push('/login')
+    } catch (error) {
+        console.log(error);
+    }
+}
 
+const clickOutsideMenuProfile = (event) => {
+    const modal = document.getElementById('user-menu');
+    if (!modal.contains(event.target) && showProfile) {
+        showProfile.value = false
+    }
+}
+// MOUNTED
+onMounted(() => {
+    window.document.addEventListener('click', clickOutsideMenuProfile);
+})
+// UNMOUNTED
+onBeforeUnmount(() => {
+    window.document.removeEventListener('click', clickOutsideMenuProfile);
+})
 </script>

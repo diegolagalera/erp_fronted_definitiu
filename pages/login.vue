@@ -1,48 +1,94 @@
 <template>
-    <div>
-
-        <form @submit.prevent="login()">
-
-            <div class="mb-6">
-                <label for="first_name"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
-                <input type="text" id="first_name" v-model="form.username"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
-                     dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
-            </div>
-            <div class="mb-6">
-                <label for="confirm_password"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">password</label>
-                <input type="password" id="confirm_password" v-model="form.password"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="•••••••••" required>
-            </div>
-
-            <button type="submit"
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
-        </form>
-
+    <div class="flex items-center justify-center opacity-100 h-screen">
+        <UsersLoginForm @login="login($event)">
+        </UsersLoginForm>
     </div>
 </template>
+
 <script setup>
 import { useErpStore } from '~/stores/erpStore'
-const erp = useErpStore()
+import userActions from "~/apis/apiUser"
+const router = useRouter()
 
+const erpStore = useErpStore()
 definePageMeta({
     layout: "login",
+    middleware: 'is-logged-in'
 });
-
-let form = ref({
-    username: '',
-    password: ''
+async function login(params) {
+    try {
+        await erpStore[userActions.LOGGIN.action](params)
+        router.push('/')
+    } catch (error) {
+        print(error)
+    }
+}
+onMounted(() => {
 })
 
+</script>
 
-function login(params) {
-    console.log(form.value);
-    console.log(form.value.username);
-    console.log(form.value.password);
-    erp.login(form.value)
+<style>
+/* ---- reset ---- */
+
+body {
+    margin: 0;
+    font: normal 75% Arial, Helvetica, sans-serif;
 }
 
-</script>
+canvas {
+    display: block;
+    vertical-align: bottom;
+}
+
+/* ---- particles.js container ---- */
+
+#particles-js {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* background-color: #666666; */
+    background: linear-gradient(#440404, #1c0d70);
+    /* background-image: url(""); */
+    background-image: linear-gradient(#ac9b9b, #333333);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50% 50%;
+}
+
+/* ---- stats.js ---- */
+
+.count-particles {
+    background: #000022;
+    position: absolute;
+    top: 48px;
+    left: 0;
+    width: 80px;
+    color: #13E8E9;
+    font-size: .8em;
+    text-align: left;
+    text-indent: 4px;
+    line-height: 14px;
+    padding-bottom: 2px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+}
+
+.js-count-particles {
+    font-size: 1.1em;
+}
+
+#stats,
+.count-particles {
+    -webkit-user-select: none;
+}
+
+#stats {
+    border-radius: 3px 3px 0 0;
+    overflow: hidden;
+}
+
+.count-particles {
+    border-radius: 0 0 3px 3px;
+}
+</style>
