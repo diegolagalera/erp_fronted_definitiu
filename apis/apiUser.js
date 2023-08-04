@@ -13,7 +13,7 @@ class userActions {
     // USERS
     static GET_USERS = {
         name: 'GET_USERS',
-        action: 'GET_USER',
+        action: 'GET_USERS',
         url: '/user'
     }
 }

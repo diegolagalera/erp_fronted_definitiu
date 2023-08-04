@@ -2,7 +2,7 @@
     <div class="top-0 w-auto bg-[#ffffff] h-full p-0 rounded-xl relative overflow-hidden shadow-lg shadow-slate-950 ">
         <div id="title-menu" class="mt-5 text-center">
             <p class="text-3xl">
-                <Icon name="ph:sketch-logo-thin" color="gray" class="mr-3 -ml-8" />ERP
+                <Icon name="ph:sketch-logo-thin" color="gray" class="mr-3 -ml-8" />NODO
             </p>
         </div>
         <hr

@@ -1,13 +1,13 @@
 <template>
     <div>
-        {{ erp.msg }}
-        {{ erp.upper }}
-        <button class="shadow-2xl" @click="erp.setMsg('jejejeje')">set new message button</button>
-
-        <CustomTable></CustomTable>
+        <CustomTable :items="users" :headers="headers" :pagination="pagination" @change-page="paginate($event)">
+            <div class="">
+               pon el filtro
+            </div>
+        </CustomTable>
         <!-- {{ user }} -->
-        {{ erp.users }}
-        <button @click="getuserss">refresh </button>
+        <!-- {{ users }} -->
+        <!-- <button @click="getuserss">refresh </button> -->
     </div>
 </template>
 <script setup>
@@ -15,33 +15,62 @@
 const runtimeConfig = useRuntimeConfig()
 console.log(utils.test())
 import { useErpStore } from '~/stores/erpStore'
+import userActions from "~/apis/apiUser"
 const erp = useErpStore()
+let users = ref([])
+let filter = ref([])
+let pagination = ref({
+    total: 0,
+    limit: 5,
+    offset: 0,
+    search: ''
+})
+let headers = [
+    { col: 'id', name: 'ID' },
+    { col: 'username', name: 'usuario' },
+    { col: 'tel', name: 'Telefono' },
+    { col: 'email', name: 'Correo' },
+    { col: 'disabled', name: 'Activo' },
+    { col: 'created', name: 'Creado' },
+    { col: 'actions', name: 'Acciones' }
+]
 definePageMeta({
     middleware: 'is-logged-out'
 })
-// const double = computed(() => count.value * 2)
-// const users = ref([])
-// const loadusers = ref(null)
-// const errorusers = ref(null)
+function paginate(newPagination) {
+    filter.value = []
+    console.log(newPagination.limit);
+    console.log(newPagination.offset);
+    pagination.value.limit = newPagination.limit
+    pagination.value.offset = newPagination.offset
+    if (newPagination?.search) {
+        filter.value.push({ 'text': newPagination.search })
+    }
+    console.log(pagination.value);
 
-// const { data: users, pending: loaduser, error: errorusers, refresh: getuserss } = await useFetch(`${runtimeConfig.public.apiUrl}/user/`,
-//     {
-//         method: "POST",
-//         body: { 'params': [] },
-//         headers: {
-//             Accept: 'application/json',
-//             'Cache-Control': 'no-cache'
-//         }
-//     })
+    filter.value.push({ limit: pagination.value.limit, offset: pagination.value.offset })
+    getUsers(filter)
+    // getUsers()
+}
+async function getUsers(filter) {
+    console.log(pagination);
+    console.log(pagination.value);
 
-// const appConfig = useAppConfig()
-// const route = useRoute()
+    await erp[userActions.GET_USERS.action](filter.value).then(response => {
+        users.value = response.data.items
+        pagination.value.total = response.data.total
+        pagination.value.limit = response.data.limit
+        pagination.value.offset = response.data.offset
+
+    })
+}
+
 console.log(runtimeConfig.public.apiUrl);
 // const { data: user, pending: loaduser, error: erroruser } = await useFetch(`${runtimeConfig.public.apiUrl}/user/1`)
 onMounted(() => {
-    erp.getUsers()
-    console.log('pepepep');
-    // getUsers()
+    filter.value = []
+    filter.value.push({ limit: pagination.value.limit, offset: pagination.value.offset })
+    getUsers(filter)
 })
 
 

@@ -35,11 +35,8 @@ export const useErpStore = defineStore('erp', {
             }
 
         },
-        async [userActions.GET_USERS.name]() {
-            this.users = []
-            await $axios.post('/user', { 'params': [] }).then(response => {
-                this.users = response.data
-            })
+        async [userActions.GET_USERS.name](filter) {
+            return await $axios.post('/user', { 'params': filter })
         },
         logout() {
             this.user = null
