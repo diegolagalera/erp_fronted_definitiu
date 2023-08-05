@@ -12,7 +12,7 @@
                                     d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                             </svg>
                         </div>
-                        <input type="text" id="table-search-users" v-model="search"
+                        <input type="text" id="table-search-users" v-model="modelValue.search"
                             class="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Search for users">
                     </div>
@@ -26,11 +26,7 @@
                      dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                         :class="advancetFilter ? '!bg-red-500' : ''" @click="advancetFilter = !advancetFilter">{{
                             advancetFilter ? "x" : 'Filtro avanzado' }}</button>
-
-                    <!-- <button class="" @click="advancetFilter = !advancetFilter">FILTRO</button> -->
-
                 </div>
-
             </div>
             <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 w-full">
@@ -40,8 +36,6 @@
                             <span>
                                 {{ head.name }}
                             </span>
-
-
                         </th>
                     </tr>
                 </thead>
@@ -54,46 +48,41 @@
                             </span>
                             <span v-else>
                                 {{ item[head.col] }}
-
                             </span>
-
                         </td>
                     </tr>
-
                 </tbody>
             </table>
             <nav class="flex items-center justify-between pt-4" aria-label="Table navigation">
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Showing <span
                         class="font-semibold text-gray-900 dark:text-white">
-                        {{ pagination.offset }}-{{ pagination.limit + pagination.offset }}
+                        {{ modelValue.offset }}-{{ modelValue.limit + modelValue.offset }}
                     </span>
                     of
-                    <span class="font-semibold text-gray-900 dark:text-white">{{ pagination.total }}</span></span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ modelValue.total }}</span></span>
                 <div class="flex text-sm h-10 mr-8">
-                    <button class="mb-1 mr-4" v-if="currentPage !== 1" @click="currentPage--">
+                    <button class="mb-1 mr-4" v-if="modelValue.page !== 1" @click="modelValue.page--">
                         <Icon name="material-symbols:skip-previous">
 
                         </Icon>
                     </button>
                     <div class="mt-2 mr-4">
-                        Pagina {{ currentPage }} de {{ pages }}
+                        Pagina {{ modelValue.page }} de {{ pages }}
                     </div>
 
-                    <button class="mb-1" v-if="currentPage !== pages" @click="nextPage()">
+                    <button class="mb-1" v-if="modelValue.page !== pages" @click="modelValue.page++">
                         <Icon name="material-symbols:skip-next">
 
                         </Icon>
                     </button>
                 </div>
-
             </nav>
         </div>
     </div>
 </template>
 <script setup>
-const emit = defineEmits(['changePage', 'search'])
+const emit = defineEmits(['changePage'])
 
-let currentPage = ref(1)
 let search = ref('')
 let advancetFilter = ref(false)
 let searchTimer = ref(null)
@@ -101,36 +90,28 @@ let searchTimer = ref(null)
 const props = defineProps({
     items: { type: Array, default: [] },
     headers: { type: Array, required: true },
-    pagination: { type: Object, default: null }
+    modelValue: { type: Object, }
 })
 let pages = computed(() => {
-    if (props.pagination) {
-        return Math.ceil(props.pagination.total / props.pagination.limit)
-    }
-    else
-        return 0
+    return Math.ceil(props.modelValue.total / props.modelValue.limit)
 })
-function nextPage() {
-    console.log(currentPage.value);
-    currentPage.value++
-}
-watch(currentPage, async (newValue, oldValue) => {
+
+watch(() => props.modelValue.page, async (newValue, oldValue) => {
     if (newValue !== oldValue) {
-        let newPagination = props.pagination
-        newPagination.offset = newPagination.limit * (newValue - 1)
-        emit('changePage', newPagination)
+        props.modelValue.offset = props.modelValue.limit * (newValue - 1)
+        emit('changePage')
     }
 })
-watch(search, async (newValue, oldValue) => {
+watch(()=>props.modelValue.search, async (newValue, oldValue) => {
     if (newValue !== oldValue) {
         clearTimeout(searchTimer);
         searchTimer = setTimeout(() => {
-            let newPagination = props.pagination
-            newPagination.offset = 0
-            currentPage.value = 1
-            newPagination.search = search.value
-            emit('changePage', newPagination)
+            props.modelValue.offset = 0
+            props.modelValue.page = 1
+            // props.modelValue.search = search.value
+            emit('changePage')
         }, 500);
     }
 })
+
 </script>
